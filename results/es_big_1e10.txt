@@ -1,0 +1,11 @@
+N=10000000000 survivors=55699784 unresolved=0
+GLOBAL MAX delta=107 at n=8803369
+decade 1e1 : max delta=7 at n=49 (count 2)
+decade 1e2 : max delta=7 at n=169 (count 15)
+decade 1e3 : max delta=23 at n=1201 (count 124)
+decade 1e4 : max delta=31 at n=21169 (count 992)
+decade 1e5 : max delta=59 at n=118801 (count 8285)
+decade 1e6 : max delta=107 at n=8803369 (count 70849)
+decade 1e7 : max delta=63 at n=90108841 (count 620144)
+decade 1e8 : max delta=83 at n=108139201 (count 5504774)
+decade 1e9 : max delta=83 at n=2188875529 (count 49494599)

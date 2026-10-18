@@ -1,0 +1,4 @@
+selftest ok (8803369 -> delta 107, none below)
+range [10000000000,1000000000000)  primes tested=696585317  in 1612.1 s
+MAX delta=59 at n=514597369441
+primes needing delta>107: 0
