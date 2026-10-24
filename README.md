@@ -5,7 +5,10 @@ Erdős–Straus conjecture, and a census of the minimum class `C_k` for primes u
 
 ## Result
 
-- **No prime below 10^12 lies outside `C_27`.**
+- **No prime below 10^12 requires `k > 27`.** This is established in two parts: the
+  36 residue classes mod 9240 are swept exhaustively below 10^12 (`c27`), and every
+  prime outside those classes is already in `C_3` by Ionascu & Wilson, Theorem 2.2
+  (see *Method*). No prime in the swept set needed δ > 107.
 - The deepest known class remains **k = 27**, held by `n = 8,803,369` (δ = 107).
 - For `10^10 ≤ n < 10^12`, the maximum is **k = 15** (δ = 59, at n = 514,597,369,441).
 - Prior published census: 4,146,894,049 (Ionascu & Wilson, 2010).
@@ -41,13 +44,20 @@ for a prime `p`, the multiples in the class form a single progression, so the st
 
 ## Validation
 
-Three independent checks:
+Three checks, described below with their limits:
 
 1. **Self-test** — the engine reproduces `8,803,369 → δ = 107` and confirms no smaller δ works.
-2. **Cross-check** — on `[10^9, 10^10)` it returns max δ = 83, matching an independent
-   exhaustive census over all `n ≡ 1 (mod 4)`.
+2. **Cross-check** — on `[10^9, 10^10)` `c27` returns max δ = 83, matching `es_big`
+   run exhaustively over all `n ≡ 1 (mod 4)`. These two programs share the `works()`
+   criterion but factor and sieve differently, so this check catches implementation
+   errors, not a wrong criterion. The `es_big` run also reports
+   `cofactor-survived-trial-division`, which is `0` across `[2, 10^10)`.
 3. **Prime count** — 696,585,317 primes found, versus ~6.97×10^8 predicted by the
    prime number theorem in arithmetic progressions (agreement to 0.02%).
+
+**Known gap:** none of the three checks validates the exact criterion itself against
+first principles. A brute-force enumeration of `(a, b, c)` for small `n` would close
+this, and is not yet implemented.
 
 ## Build and run
 
