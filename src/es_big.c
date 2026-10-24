@@ -13,6 +13,7 @@ static uint32_t *spfN, *spfA;
 static uint64_t SEGL,SEGH,ALo,AHi;
 static uint8_t *R1,*R2;
 static uint64_t base[16384]; static int nb=0;
+static uint64_t suspect_composite=0;  /* cofactor survived trial division => treated as prime */
 static uint64_t N,NA,KMAX;
 
 static inline void bset(uint8_t*b,uint64_t i){ b[i>>3] |= (uint8_t)(1u<<(i&7)); }
@@ -36,7 +37,8 @@ static int bad3_of(uint64_t x,uint64_t lo,uint64_t hi,const uint32_t*spf){
   while(x>1){
     uint64_t pp;
     if(x>=lo&&x<hi){ uint32_t s=spf[x-lo]; pp=s?(uint64_t)s:x; }
-    else { pp=0; for(int i=0;i<nb;i++){ if(base[i]*base[i]>x){pp=x;break;} if(x%base[i]==0){pp=base[i];break;} } if(!pp)pp=x; }
+    else { pp=0; for(int i=0;i<nb;i++){ if(base[i]*base[i]>x){pp=x;break;} if(x%base[i]==0){pp=base[i];break;} }
+           if(!pp){ pp=x; __atomic_add_fetch(&suspect_composite,1,__ATOMIC_RELAXED); } }
     if(pp==3||pp%3==2) return 1;
     while(x%pp==0) x/=pp;
   }
@@ -46,7 +48,8 @@ static int factor_into(uint64_t x,uint64_t lo,uint64_t hi,const uint32_t*spf,uin
   while(x>1){
     uint64_t pp;
     if(x>=lo && x<hi){ uint32_t sp=spf[x-lo]; pp = sp ? (uint64_t)sp : x; }
-    else { pp=0; for(int i=0;i<nb;i++){ if(base[i]*base[i]>x){pp=x;break;} if(x%base[i]==0){pp=base[i];break;} } if(!pp)pp=x; }
+    else { pp=0; for(int i=0;i<nb;i++){ if(base[i]*base[i]>x){pp=x;break;} if(x%base[i]==0){pp=base[i];break;} }
+           if(!pp){ pp=x; __atomic_add_fetch(&suspect_composite,1,__ATOMIC_RELAXED); } }
     int e=0; while(x%pp==0){x/=pp;e++;}
     int f=0; for(int i=0;i<k;i++) if(pr[i]==pp){ex[i]+=e;f=1;break;}
     if(!f){ pr[k]=pp; ex[k]=e; k++; }
@@ -146,6 +149,7 @@ int main(int argc,char**argv){
     segs++;
     if(segs%100==0) fprintf(stderr,"  seg %llu surv=%llu gmax=%u %.1fs\n",(unsigned long long)segs,(unsigned long long)surv,gmax,(double)(clock()-t0)/CLOCKS_PER_SEC);
   }
+  printf("cofactor-survived-trial-division (treated as prime): %llu\n",(unsigned long long)suspect_composite);
   printf("N=%llu survivors=%llu unresolved=%llu\n",(unsigned long long)N,(unsigned long long)surv,(unsigned long long)unres);
   printf("GLOBAL MAX delta=%u at n=%llu\n",gmax,(unsigned long long)gmaxn);
   for(int i=1;i<=11;i++) if(cnt[i]) printf("decade 1e%d : max delta=%u at n=%llu (count %llu)\n",i,dmax[i],(unsigned long long)dmaxn[i],(unsigned long long)cnt[i]);
