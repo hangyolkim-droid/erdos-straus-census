@@ -56,10 +56,15 @@ Four checks, described below with their limits:
    prime number theorem in arithmetic progressions (agreement to 0.02%).
 4. **Criterion check** — `bruteforce` solves `4/n = 1/a + 1/b + 1/c` by direct
    enumeration, with no residue sets and no reachability machinery: for each `a` it
-   tests `c = B b / (b r − B)` for integrality over `B/r < b ≤ 2B/r`. On `n < 10^5`
-   it returns maxima of δ = 7, 23, 31 at n = 49, 1201, 21169, matching the census,
-   with no unsolved `n`. This is the only check that does not assume `works()` is
-   correct.
+   tests `c = B b / (b r − B)` for integrality over `B/r < b ≤ 2B/r`. Restricted to
+   primes, its per-`n` output is identical to `c27` on all 609 primes below `10^4`,
+   not merely in the maxima. Practical to about `10^5`. This is the only check that
+   does not assume `works()` is correct.
+
+Coverage differs by check. `c27` runs to `10^12`, `es_big` to `10^10`, and
+`bruteforce` to about `10^5`. In particular the `10^10–10^12` tier rests on `c27`
+and the prime-count check alone; the composite-as-prime counter and the
+criterion check apply below `10^10` and `10^5` respectively.
 
 ## Build and run
 
