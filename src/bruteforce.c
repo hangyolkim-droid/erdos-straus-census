@@ -92,6 +92,12 @@ static uint32_t brute_min_delta(uint64_t n, uint32_t dmax) {
 int main(int argc, char **argv) {
     uint64_t N   = argc > 1 ? strtoull(argv[1], 0, 10) : 100000ULL;
     uint32_t cap = argc > 2 ? (uint32_t)strtoull(argv[2], 0, 10) : 107;
+    const char *table = getenv("BRUTEFORCE_TABLE");
+    FILE *tf = NULL;
+    if (table && *table) {
+        tf = fopen(table, "w");
+        if (!tf) { perror(table); return 1; }
+    }
 
     printf("brute force over n < %llu, delta cap %u\n",
            (unsigned long long)N, cap);
@@ -104,6 +110,7 @@ int main(int argc, char **argv) {
      * described in the README, so they carry no depth information. */
     for (uint64_t n = 5; n < N; n += 4) {
         uint32_t d = brute_min_delta(n, cap);
+        if (tf) fprintf(tf, "%llu %u\n", (unsigned long long)n, d);
         checked++;
         if (!d) { unsolved++; continue; }
         if (d > gmax) { gmax = d; gmaxn = n; }
@@ -112,5 +119,6 @@ int main(int argc, char **argv) {
     printf("n checked: %llu | unsolved at cap: %llu\n",
            (unsigned long long)checked, (unsigned long long)unsolved);
     printf("MAX delta=%u at n=%llu\n", gmax, (unsigned long long)gmaxn);
+    if (tf) fclose(tf);
     return 0;
 }
