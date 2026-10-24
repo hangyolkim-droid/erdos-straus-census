@@ -22,7 +22,10 @@ static uint64_t powmod(uint64_t a,uint64_t e,uint64_t m){uint64_t r=1;a%=m;while
 
 static void sieve_primes(uint64_t lim){
   char*c=calloc(lim+1,1);
-  for(uint64_t i=2;i<=lim;i++) if(!c[i]){ primes[np++]=i; for(uint64_t j=i*i;j<=lim;j+=i) c[j]=1; }
+  for(uint64_t i=2;i<=lim;i++) if(!c[i]){
+    if(np>=80000){ fprintf(stderr,"primes[] overflow at %llu (cap 80000)\n",(unsigned long long)i); exit(1); }
+    primes[np++]=i; for(uint64_t j=i*i;j<=lim;j+=i) c[j]=1;
+  }
   free(c);
   for(int i=0;i<np;i++) if(primes[i]>11) inv9240[i]=powmod(9240%primes[i],primes[i]-2,primes[i]);
 }
