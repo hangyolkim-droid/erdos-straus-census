@@ -44,7 +44,7 @@ for a prime `p`, the multiples in the class form a single progression, so the st
 
 ## Validation
 
-Three checks, described below with their limits:
+Four checks, described below with their limits:
 
 1. **Self-test** — the engine reproduces `8,803,369 → δ = 107` and confirms no smaller δ works.
 2. **Cross-check** — on `[10^9, 10^10)` `c27` returns max δ = 83, matching `es_big`
@@ -54,10 +54,12 @@ Three checks, described below with their limits:
    `cofactor-survived-trial-division`, which is `0` across `[2, 10^10)`.
 3. **Prime count** — 696,585,317 primes found, versus ~6.97×10^8 predicted by the
    prime number theorem in arithmetic progressions (agreement to 0.02%).
-
-**Known gap:** none of the three checks validates the exact criterion itself against
-first principles. A brute-force enumeration of `(a, b, c)` for small `n` would close
-this, and is not yet implemented.
+4. **Criterion check** — `bruteforce` solves `4/n = 1/a + 1/b + 1/c` by direct
+   enumeration, with no residue sets and no reachability machinery: for each `a` it
+   tests `c = B b / (b r − B)` for integrality over `B/r < b ≤ 2B/r`. On `n < 10^5`
+   it returns maxima of δ = 7, 23, 31 at n = 49, 1201, 21169, matching the census,
+   with no unsolved `n`. This is the only check that does not assume `works()` is
+   correct.
 
 ## Build and run
 
@@ -65,6 +67,7 @@ this, and is not yet implemented.
     ./c27 10000000000 1000000000000
 
 `es_big` is the exhaustive deficit census over all `n ≡ 1 (mod 4)` (used up to 10^10).
+`bruteforce` is the direct-enumeration criterion check (practical to ~10^5).
 
 ## Scope
 
