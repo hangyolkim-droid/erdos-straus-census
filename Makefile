@@ -2,7 +2,7 @@ CC      ?= cc
 CFLAGS  ?= -O3 -march=native -Wall
 LDLIBS  ?= -lm
 
-all: c27 es_big bench
+all: c27 es_big bench bruteforce
 
 c27: src/c27.c
 	$(CC) $(CFLAGS) -pthread -o $@ $< $(LDLIBS)
@@ -13,7 +13,10 @@ es_big: src/es_big.c
 bench: src/bench.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
 
+bruteforce: src/bruteforce.c
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
+
 clean:
-	rm -f c27 es_big bench
+	rm -f c27 es_big bench bruteforce
 
 .PHONY: all clean
