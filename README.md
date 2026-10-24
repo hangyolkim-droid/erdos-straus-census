@@ -1,6 +1,6 @@
 # Erdős–Straus class-depth census
 
-An independent, from-scratch implementation of the deficit/class framework for the
+A from-scratch re-derivation and implementation of the deficit/class framework for the
 Erdős–Straus conjecture, and a census of the minimum class `C_k` for primes up to 10^12.
 
 ## Result
@@ -95,6 +95,11 @@ it was instrumented.
 
 `es_big` is the exhaustive deficit census over all `n ≡ 1 (mod 4)` (used up to 10^10).
 `bruteforce` is the direct-enumeration criterion check (practical to ~10^5).
+`bench` is a microbenchmark for the `works()` predicate on sampled large primes — it
+reports per-prime cost and how many sampled primes need δ > 107. It is not part of the
+census and no result above depends on it:
+
+    ./bench 20000        # sample 20000 random primes in [2e11, 1e12)
 
 ## Scope
 
@@ -111,4 +116,6 @@ This is a census, not a proof of the conjecture.
 
 The mathematics is due to Mordell and to Ionascu & Wilson. This repository is an
 independent re-derivation and implementation, written with an AI assistant and
-validated against the published record and an independent exhaustive census.
+validated against the published record, two implementations of the same criterion,
+and a direct-enumeration check of the criterion itself. See *Validation* for the
+range each of those covers.

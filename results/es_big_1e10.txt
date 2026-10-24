@@ -1,3 +1,4 @@
+cofactor-survived-trial-division (treated as prime): 0
 N=10000000000 survivors=55699784 unresolved=0
 GLOBAL MAX delta=107 at n=8803369
 decade 1e1 : max delta=7 at n=49 (count 2)
