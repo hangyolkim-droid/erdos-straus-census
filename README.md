@@ -1,6 +1,6 @@
 # Erdős–Straus class-depth census
 
-An independent, from-scratch implementation of the deficit/class framework for the
+A from-scratch re-derivation and implementation of the deficit/class framework for the
 Erdős–Straus conjecture, and a census of the minimum class `C_k` for primes up to 10^12.
 
 ## Result
@@ -12,6 +12,11 @@ Erdős–Straus conjecture, and a census of the minimum class `C_k` for primes u
 - The deepest known class remains **k = 27**, held by `n = 8,803,369` (δ = 107).
 - For `10^10 ≤ n < 10^12`, the maximum is **k = 15** (δ = 59, at n = 514,597,369,441).
 - Prior published census: 4,146,894,049 (Ionascu & Wilson, 2010).
+
+All figures above are from `c27` over the 36 residue classes permitted by
+Ionascu-Wilson Thm 2.2; primes outside those classes are in `C_3` (or `C_8`/
+`C_40` for 1201 and 6001) by the theorem, not by sweep. See *Validation* for
+what each range rests on.
 
 ## The mathematics
 
@@ -44,27 +49,44 @@ for a prime `p`, the multiples in the class form a single progression, so the st
 
 ## Validation
 
-Four checks, described below with their limits:
+Four checks, listed in increasing order of independence from `works()`.
 
-1. **Self-test** — the engine reproduces `8,803,369 → δ = 107` and confirms no smaller δ works.
-2. **Cross-check** — on `[10^9, 10^10)` `c27` returns max δ = 83, matching `es_big`
-   run exhaustively over all `n ≡ 1 (mod 4)`. These two programs share the `works()`
-   criterion but factor and sieve differently, so this check catches implementation
-   errors, not a wrong criterion. The `es_big` run also reports
-   `cofactor-survived-trial-division`, which is `0` across `[2, 10^10)`.
-3. **Prime count** — 696,585,317 primes found, versus ~6.97×10^8 predicted by the
-   prime number theorem in arithmetic progressions (agreement to 0.02%).
-4. **Criterion check** — `bruteforce` solves `4/n = 1/a + 1/b + 1/c` by direct
-   enumeration, with no residue sets and no reachability machinery: for each `a` it
-   tests `c = B b / (b r − B)` for integrality over `B/r < b ≤ 2B/r`. Restricted to
-   primes, its per-`n` output is identical to `c27` on all 609 primes below `10^4`,
-   not merely in the maxima. Practical to about `10^5`. This is the only check that
-   does not assume `works()` is correct.
+**1. Self-test.** The engine reproduces `8,803,369 -> delta = 107` and confirms no
+smaller delta works.
 
-Coverage differs by check. `c27` runs to `10^12`, `es_big` to `10^10`, and
-`bruteforce` to about `10^5`. In particular the `10^10–10^12` tier rests on `c27`
-and the prime-count check alone; the composite-as-prime counter and the
-criterion check apply below `10^10` and `10^5` respectively.
+**2. Cross-implementation.** On `[10^9, 10^10)`, `c27` and `es_big` both return
+max delta = 83. This catches implementation errors — the two programs share the
+`works()` criterion but differ in sieving and factorization. It cannot catch a
+wrong criterion, because both use the same predicate.
+
+**3. Density.** The sweep finds 696,585,317 primes in the 36 residue classes,
+against ~6.97x10^8 predicted by the prime number theorem in arithmetic
+progressions (0.02%). This bounds the *net* misclassification rate. It does not
+bound the per-`n` error: two errors that cancel are invisible to a count.
+
+**4. Criterion.** `bruteforce` solves `4/n = 1/a + 1/b + 1/c` by direct
+enumeration — no residue sets, no reachability machinery. On all 609 primes
+= 1 (mod 4) below `10^4` it is per-`n` identical to `c27`, with no unsolved `n`.
+This is the only check that does not assume `works()` is correct.
+
+### What each range rests on
+
+| Range | Evidence |
+|---|---|
+| n < 10^4 | Independent predicate, per-`n` (`bruteforce`) |
+| 10^4 <= n < 10^10 | Two implementations of the same predicate, exhaustive |
+| 10^10 <= n < 10^12 | `c27` only, plus the density check |
+
+The headline result is at the top tier: the `10^12` sweep is `c27` alone. The
+strongest independent evidence covers the smallest range. That is the usual
+shape of a computational census claim, but it should be stated rather than
+implied.
+
+`es_big` also counts cofactors that survive trial division (the path where a
+factor of `a/g` is treated as prime without being checked). The count is `0`
+across `[2, 10^10)`. That is a measurement over that range, not a proof that the
+path is unreachable — it establishes the hazard was dormant in the range where
+it was instrumented.
 
 ## Build and run
 
@@ -73,6 +95,11 @@ criterion check apply below `10^10` and `10^5` respectively.
 
 `es_big` is the exhaustive deficit census over all `n ≡ 1 (mod 4)` (used up to 10^10).
 `bruteforce` is the direct-enumeration criterion check (practical to ~10^5).
+`bench` is a microbenchmark for the `works()` predicate on sampled large primes — it
+reports per-prime cost and how many sampled primes need δ > 107. It is not part of the
+census and no result above depends on it:
+
+    ./bench 20000        # sample 20000 random primes in [2e11, 1e12)
 
 ## Scope
 
@@ -89,4 +116,6 @@ This is a census, not a proof of the conjecture.
 
 The mathematics is due to Mordell and to Ionascu & Wilson. This repository is an
 independent re-derivation and implementation, written with an AI assistant and
-validated against the published record and an independent exhaustive census.
+validated against the published record, two implementations of the same criterion,
+and a direct-enumeration check of the criterion itself. See *Validation* for the
+range each of those covers.
