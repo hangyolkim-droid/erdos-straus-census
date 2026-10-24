@@ -5,7 +5,7 @@
 #include <time.h>
 
 static uint64_t primes[42000]; static int np=0;
-static void sieve(uint64_t lim){char*c=calloc(lim+1,1);for(uint64_t i=2;i<=lim;i++)if(!c[i]){primes[np++]=i;for(uint64_t j=i*i;j<=lim;j+=i)c[j]=1;}free(c);}
+static void sieve(uint64_t lim){char*c=calloc(lim+1,1);for(uint64_t i=2;i<=lim;i++)if(!c[i]){if(np>=42000){fprintf(stderr,"primes[] overflow at %llu\n",(unsigned long long)i);exit(1);}primes[np++]=i;for(uint64_t j=i*i;j<=lim;j+=i)c[j]=1;}free(c);}
 static inline uint64_t gcd64(uint64_t a,uint64_t b){while(b){uint64_t t=a%b;a=b;b=t;}return a;}
 static uint64_t mulmod(uint64_t a,uint64_t b,uint64_t m){return (__uint128_t)a*b%m;}
 static uint64_t powmod(uint64_t a,uint64_t e,uint64_t m){uint64_t r=1;a%=m;while(e){if(e&1)r=mulmod(r,a,m);a=mulmod(a,a,m);e>>=1;}return r;}
@@ -46,8 +46,9 @@ static int works(uint64_t n,uint32_t delta){
   }
   if(x>1){ // x prime, exponent 2
     uint64_t b=x%p;
+    uint64_t b2=(b*b)%p;
     unsigned char nr[128]; memset(nr,0,p);
-    for(uint32_t r=0;r<p;r++) if(reach[r]){ nr[(r*b)%p]=1; nr[(r*b%p*b)%p]=1; }
+    for(uint32_t r=0;r<p;r++) if(reach[r]){ nr[r]=1; nr[(r*b)%p]=1; nr[(r*b2)%p]=1; }
     memcpy(reach,nr,p);
   }
   // multiply by n^j, j=0,1,2
